@@ -1,0 +1,139 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-05T00:12:20.486Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 5,
+    "implemented": 3,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Translate all visible frontend UI strings to Italian across the entire app (login page, onboarding, profile setup modal, dashboard, attendance pages, holiday pages, permissions pages, admin approvals, team overview/reporting, invite management, headers/menus, buttons, labels, empty states, validation messages, toast/alert text, and any helper text). Ensure consistent terminology for roles and workflows (e.g., Admin/Amministratore, Employee/Dipendente) across all screens.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Dashboard.tsx",
+          "frontend/src/components/ProfileSetupModal.tsx",
+          "frontend/src/components/MyPermissions.tsx",
+          "frontend/src/components/PermissionApprovals.tsx",
+          "frontend/src/lib/attendanceLabels.ts",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/components/OnboardingFlow.tsx",
+          "frontend/src/components/MyAttendance.tsx",
+          "frontend/src/components/HolidayApprovals.tsx",
+          "frontend/src/components/MyHolidays.tsx",
+          "frontend/src/components/TeamOverview.tsx",
+          "frontend/src/components/InviteManagement.tsx",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Dashboard.tsx",
+          "frontend/src/components/ProfileSetupModal.tsx",
+          "frontend/src/lib/attendanceLabels.ts",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Localize all frontend date/time presentation to Italian formatting (including day/month names, short/long date formats, and any relative labels used in filters like day/week/month views). Ensure the formatting is consistent between personal views (e.g., MyAttendance/MyHolidays/MyPermissions) and admin views (e.g., TeamOverview, approvals).",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/lib/utils.ts",
+          "frontend/src/components/InviteManagement.tsx",
+          "frontend/src/components/MyAttendance.tsx",
+          "frontend/src/components/MyHolidays.tsx",
+          "frontend/src/components/MyPermissions.tsx",
+          "frontend/src/components/HolidayApprovals.tsx",
+          "frontend/src/components/PermissionApprovals.tsx",
+          "frontend/src/components/TeamOverview.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Translate all domain labels for attendance statuses, activity types, request statuses, and role labels into Italian wherever they appear (badges, dropdowns, tables, summaries, and exports initiated from the UI). Centralize these label mappings so the same Italian terms are used everywhere.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/lib/domainLabels.ts",
+          "frontend/src/lib/attendanceLabels.ts",
+          "frontend/src/components/MyAttendance.tsx",
+          "frontend/src/components/TeamOverview.tsx",
+          "frontend/src/components/MyHolidays.tsx",
+          "frontend/src/components/HolidayApprovals.tsx",
+          "frontend/src/components/MyPermissions.tsx",
+          "frontend/src/components/PermissionApprovals.tsx",
+          "frontend/src/pages/Dashboard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/lib/domainLabels.ts",
+          "frontend/src/lib/attendanceLabels.ts",
+          "frontend/src/pages/Dashboard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Localize backend-generated user-facing content used by the UI and exports, including CSV export column headers and any textual fields that are not purely user-entered. Ensure CSV exports produced from admin reporting and request modules use Italian headers and Italian date formatting.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Add a simple, maintainable localization structure for Italian strings on the frontend (e.g., a single source-of-truth dictionary/module) and refactor existing components to use it, without modifying any files under frontend paths marked as immutable by the platform constraints.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/lib/i18n/it.ts",
+          "frontend/src/lib/i18n/index.ts",
+          "frontend/src/pages/Dashboard.tsx",
+          "frontend/src/components/ProfileSetupModal.tsx",
+          "frontend/src/components/MyPermissions.tsx",
+          "frontend/src/components/PermissionApprovals.tsx",
+          "frontend/src/components/MyAttendance.tsx",
+          "frontend/src/components/MyHolidays.tsx",
+          "frontend/src/components/HolidayApprovals.tsx",
+          "frontend/src/components/TeamOverview.tsx",
+          "frontend/src/components/InviteManagement.tsx",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/components/OnboardingFlow.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/lib/i18n/it.ts",
+          "frontend/src/lib/i18n/index.ts",
+          "frontend/src/pages/Dashboard.tsx",
+          "frontend/src/components/ProfileSetupModal.tsx",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/App.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/components/ProfileSetupModal.tsx",
+    "frontend/src/lib/attendanceLabels.ts",
+    "frontend/src/lib/domainLabels.ts",
+    "frontend/src/lib/i18n/index.ts",
+    "frontend/src/lib/i18n/it.ts",
+    "frontend/src/pages/Dashboard.tsx",
+    "frontend/src/pages/LoginPage.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
