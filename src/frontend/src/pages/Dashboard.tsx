@@ -30,9 +30,20 @@ export default function Dashboard() {
   
   const [activeTab, setActiveTab] = useState('attendance');
 
+  // Guard: force personal mode if not admin
   useEffect(() => {
-    localStorage.setItem('dashboardViewMode', viewMode);
-  }, [viewMode]);
+    if (!adminLoading && !isAdmin && viewMode === 'admin') {
+      setViewMode('personal');
+      setActiveTab('attendance');
+      localStorage.setItem('dashboardViewMode', 'personal');
+    }
+  }, [isAdmin, adminLoading, viewMode]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      localStorage.setItem('dashboardViewMode', viewMode);
+    }
+  }, [viewMode, isAdmin]);
 
   if (!identity || !userProfile) {
     return null;
@@ -40,13 +51,44 @@ export default function Dashboard() {
 
   const roleLabel = getRoleLabel(userProfile.isEmployee);
 
+  const modeControl = !adminLoading && isAdmin ? (
+    <div className="flex gap-2 w-full sm:w-auto">
+      <Button
+        variant={viewMode === 'personal' ? 'default' : 'outline'}
+        onClick={() => {
+          setViewMode('personal');
+          setActiveTab('attendance');
+        }}
+        className="gap-2 flex-1 sm:flex-initial"
+        size="sm"
+      >
+        <User className="h-4 w-4" />
+        <span className="hidden sm:inline">{t('views.personalView')}</span>
+        <span className="sm:hidden">{t('header.personal')}</span>
+      </Button>
+      <Button
+        variant={viewMode === 'admin' ? 'default' : 'outline'}
+        onClick={() => {
+          setViewMode('admin');
+          setActiveTab('team');
+        }}
+        className="gap-2 flex-1 sm:flex-initial"
+        size="sm"
+      >
+        <BarChart3 className="h-4 w-4" />
+        <span className="hidden sm:inline">{t('views.adminView')}</span>
+        <span className="sm:hidden">{t('header.admin')}</span>
+      </Button>
+    </div>
+  ) : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <Header />
+      <Header modeControl={modeControl} isAdminMode={viewMode === 'admin'} />
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-4">
             <div>
               <h1 className="mb-2 text-3xl font-bold tracking-tight">
                 {t('dashboard.welcomeBack', { name: userProfile.name })}
@@ -55,33 +97,6 @@ export default function Dashboard() {
                 {userProfile.position} • {roleLabel}
               </p>
             </div>
-            
-            {!adminLoading && isAdmin && (
-              <div className="flex gap-2">
-                <Button
-                  variant={viewMode === 'personal' ? 'default' : 'outline'}
-                  onClick={() => {
-                    setViewMode('personal');
-                    setActiveTab('attendance');
-                  }}
-                  className="gap-2"
-                >
-                  <User className="h-4 w-4" />
-                  {t('views.personalView')}
-                </Button>
-                <Button
-                  variant={viewMode === 'admin' ? 'default' : 'outline'}
-                  onClick={() => {
-                    setViewMode('admin');
-                    setActiveTab('team');
-                  }}
-                  className="gap-2"
-                >
-                  <BarChart3 className="h-4 w-4" />
-                  {t('views.adminView')}
-                </Button>
-              </div>
-            )}
           </div>
         </div>
 

@@ -102,6 +102,7 @@ export interface _SERVICE {
   'exportHolidayRequestsAsCSV' : ActorMethod<[], string>,
   'exportPermissionRequestsAsCSV' : ActorMethod<[], string>,
   'generateInviteCode' : ActorMethod<[], string>,
+  'generateInviteCodeWithRole' : ActorMethod<[UserRole], string>,
   'getAllAttendanceRecords' : ActorMethod<
     [],
     Array<[Principal, Array<AttendanceRecord>]>

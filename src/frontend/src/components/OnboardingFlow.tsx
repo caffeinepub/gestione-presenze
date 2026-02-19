@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { useSaveCallerUserProfile, useSubmitRSVP } from '../hooks/useQueries';
+import { useSaveCallerUserProfile, useSubmitRSVP, useGetCallerUserRole } from '../hooks/useQueries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { CheckCircle2, UserPlus } from 'lucide-react';
+import { CheckCircle2, UserPlus, Shield } from 'lucide-react';
+import { UserRole } from '../backend';
 
 interface OnboardingFlowProps {
   inviteCode: string;
@@ -18,8 +20,10 @@ export default function OnboardingFlow({ inviteCode }: OnboardingFlowProps) {
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
   const [isEmployee, setIsEmployee] = useState<'true' | 'false'>('true');
+  const [isAdminRole, setIsAdminRole] = useState(false);
   const saveProfile = useSaveCallerUserProfile();
   const submitRSVP = useSubmitRSVP();
+  const { refetch: refetchUserRole } = useGetCallerUserRole();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +48,12 @@ export default function OnboardingFlow({ inviteCode }: OnboardingFlowProps) {
         isEmployee: isEmployee === 'true',
         holidayBalance: BigInt(20), // Default 20 giorni
       });
+
+      // Check if the user was granted admin role
+      const { data: userRole } = await refetchUserRole();
+      if (userRole === UserRole.admin) {
+        setIsAdminRole(true);
+      }
 
       setStep(3);
       toast.success('Benvenuto nel team!');
@@ -197,6 +207,16 @@ export default function OnboardingFlow({ inviteCode }: OnboardingFlowProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {isAdminRole && (
+                <Alert className="border-primary/50 bg-primary/5">
+                  <Shield className="h-4 w-4 text-primary" />
+                  <AlertDescription className="ml-2">
+                    <strong>Accesso Amministratore Concesso!</strong>
+                    <br />
+                    Hai ricevuto i privilegi di amministratore. Potrai gestire il team, approvare richieste e accedere a tutte le funzionalità amministrative.
+                  </AlertDescription>
+                </Alert>
+              )}
               <div className="rounded-lg bg-muted p-4">
                 <h3 className="mb-2 font-semibold">Cosa fare dopo?</h3>
                 <ul className="space-y-1 text-sm text-muted-foreground">
@@ -204,6 +224,12 @@ export default function OnboardingFlow({ inviteCode }: OnboardingFlowProps) {
                   <li>• Richiedi ferie quando necessario</li>
                   <li>• Visualizza lo storico delle tue presenze</li>
                   <li>• Traccia il tuo saldo ferie</li>
+                  {isAdminRole && (
+                    <>
+                      <li>• Gestisci il team e approva le richieste</li>
+                      <li>• Genera codici di invito per nuovi membri</li>
+                    </>
+                  )}
                 </ul>
               </div>
               <p className="text-center text-sm text-muted-foreground">

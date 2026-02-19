@@ -3,7 +3,7 @@
  * across the entire application
  */
 
-import { AttendanceStatus, ActivityType, Variant_pending_approved_rejected, Variant_generic_familyEmergency_medical } from '../backend';
+import { AttendanceStatus, ActivityType, Variant_pending_approved_rejected, Variant_generic_familyEmergency_medical, UserRole } from '../backend';
 import { t } from './i18n';
 
 /**
@@ -95,4 +95,17 @@ export function getPermissionTypeLabel(type: Variant_generic_familyEmergency_med
  */
 export function getRoleLabel(isEmployee: boolean): string {
   return isEmployee ? t('roles.employee') : t('roles.collaborator');
+}
+
+/**
+ * Get Italian label for UserRole enum
+ */
+export function getUserRoleLabel(role: UserRole): string {
+  const labels: Record<UserRole, string> = {
+    [UserRole.admin]: 'Amministratore',
+    [UserRole.user]: 'Utente',
+    [UserRole.guest]: 'Ospite',
+  };
+
+  return labels[role] || role;
 }

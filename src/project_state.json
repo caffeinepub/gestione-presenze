@@ -1,239 +1,37 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "Gestione Presenze (AttendanceManagement) is a full-stack ICP dApp (React + Motoko canister) for tracking employee attendance and working hours, managing holiday requests, and administering team-level reports. Users authenticate via Internet Identity, create a user profile, record daily attendance with activity details and time ranges, and submit holiday requests. Admins can view team-wide attendance/holiday data, approve/reject holiday requests, manage/approve permission and role access where applicable, generate invite codes for onboarding new members, view RSVP/onboarding status, calculate hours totals, and export attendance/holiday datasets as CSV.",
+  "projectStateVersion": 3,
+  "summary": "Team management application with admin and user roles, invitation system, and team overview dashboard",
+  "architectural_notes": [
+    "Application has admin and user role system",
+    "Invitation link system for onboarding",
+    "Team overview dashboard exists",
+    "User data persistence required across updates"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "IF-1",
-      "title": "Internet Identity authentication (login/logout + session restore)",
-      "synonyms": [
-        "II auth",
-        "AuthClient integration"
-      ],
-      "description": "Provides an InternetIdentityProvider that initializes an AuthClient, restores an existing delegation on reload, supports login via Internet Identity with a 1-hour TTL, and supports logout that clears identity state.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-2",
-      "title": "Backend actor lifecycle with identity binding and query invalidation",
-      "synonyms": [
-        "useActor",
-        "authenticated actor"
-      ],
-      "description": "Creates an anonymous or authenticated canister actor depending on identity presence, optionally calls initializeAccessControl on the actor, and invalidates/refetches all non-actor react-query caches when the actor/identity changes.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-3",
-      "title": "Role-based access control (admin/user/guest) and admin bootstrap",
-      "synonyms": [
-        "AccessControl",
-        "RBAC"
-      ],
-      "description": "Motoko AccessControl module assigns the first initializing principal as admin and subsequent principals as users; provides permission checks (hasPermission), role assignment (admin-only), and admin checks used throughout backend endpoints.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-4",
-      "title": "User profile management",
-      "synonyms": [
-        "profile setup",
-        "user metadata"
-      ],
-      "description": "Supports saving and retrieving user profiles (name, position, employment type, holiday balance). Users can save and fetch their own profile; admins can fetch other users' profiles; frontend includes ProfileSetupModal and onboarding profile step.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-5",
-      "title": "Attendance recording with time tracking and activity classification",
-      "synonyms": [
-        "recordAttendance",
-        "daily presence logging"
-      ],
-      "description": "Users can record attendance entries with date (min Jan 2025 enforced), status (present/absent/remote/holiday/law104), activity (project/service/generic), start/end times (HH:MM), break duration, computed hours worked, notes, and server timestamping.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-6",
-      "title": "Attendance update and delete (CRUD)",
-      "synonyms": [
-        "edit attendance",
-        "remove attendance"
-      ],
-      "description": "Users can update or delete their attendance records by record ID; frontend provides edit and delete dialogs; react-query mutations invalidate personal and admin report caches.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-7",
-      "title": "Personal attendance history with day/week/month filters and totals",
-      "synonyms": [
-        "MyAttendance",
-        "attendance calendar view"
-      ],
-      "description": "Frontend displays the caller’s attendance records with a day/week/month time view, navigation controls, per-period total hours calculation, and tabular listing with status badges and activity labels.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-8",
-      "title": "Attendance modification audit trail",
-      "synonyms": [
-        "audit log",
-        "AttendanceModification"
-      ],
-      "description": "Backend stores per-user modification events (created/updated/deleted) including old/new record snapshots and timestamps; provides queries for own modifications and admin access by period (backend endpoint present).",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-9",
-      "title": "Holiday request submission and personal holiday tracking",
-      "synonyms": [
-        "leave requests",
-        "MyHolidays"
-      ],
-      "description": "Users can submit holiday requests with start/end date and reason, view their requests filtered by month, and see summary cards (balance, pending count, approved count) in the UI.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-10",
-      "title": "Admin holiday approvals workflow",
-      "synonyms": [
-        "approve/reject leave",
-        "HolidayApprovals"
-      ],
-      "description": "Admins can list all holiday requests, filter by pending/processed/all, and approve or reject requests; UI shows summary stats and provides per-request action buttons.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-11",
-      "title": "Admin attendance reporting (day/week/month + all records)",
-      "synonyms": [
-        "team attendance reports",
-        "TeamOverview"
-      ],
-      "description": "Admins can fetch team attendance by day/week/month as well as all attendance records; frontend computes aggregate stats (attendance rate, present counts, total hours) and displays per-user grouped records with navigation by period.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-12",
-      "title": "Total hours calculation APIs",
-      "synonyms": [
-        "hours totals",
-        "work hours analytics"
-      ],
-      "description": "Backend exposes total-hours calculations for the caller over a period (user) and for all users (admin). If hoursWorked is missing, it falls back to 8h for present/remoteWork statuses. Frontend provides react-query hooks for both endpoints.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-13",
-      "title": "Invite codes generation and management (admin)",
-      "synonyms": [
-        "team invitations",
-        "InviteManagement"
-      ],
-      "description": "Admins can generate unique invite codes, list available/used codes, and copy invite links. The UI shows statistics for available/used invites and the number of accepted RSVPs (team members).",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-14",
-      "title": "RSVP submission and invite consumption",
-      "synonyms": [
-        "invite acceptance",
-        "onboarding RSVP"
-      ],
-      "description": "Public RSVP endpoint validates invite codes and marks them as used; admins can list all RSVPs. Frontend onboarding uses RSVP submission to consume the invite code before saving the user profile.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-15",
-      "title": "Invite-based onboarding wizard",
-      "synonyms": [
-        "OnboardingFlow",
-        "new user setup"
-      ],
-      "description": "Multi-step onboarding flow for invited users: welcome screen, profile creation (name/position/employment type), RSVP submission to consume invite code, success screen, and URL cleanup to remove invite parameter.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-16",
-      "title": "CSV export for attendance and holiday requests (admin)",
-      "synonyms": [
-        "data export",
-        "report download"
-      ],
-      "description": "Backend returns CSV strings for attendance records and holiday requests (admin-only). Frontend triggers exports, builds downloadable blobs, and saves files with date-based filenames.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-17",
-      "title": "Role-based dashboard navigation and UI theming",
-      "synonyms": [
-        "Dashboard view modes",
-        "dark/light mode"
-      ],
-      "description": "Dashboard conditionally renders personal tabs (attendance/holidays) or admin tabs (team overview/approvals/invites) based on isCallerAdmin; includes a sticky header with theme toggle (next-themes) and logout, plus global toast notifications.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-18",
-      "title": "State migration for attendance time fields",
-      "synonyms": [
-        "Motoko migration",
-        "schema upgrade"
-      ],
-      "description": "Includes a Motoko migration module that converts older attendance record startTime/endTime fields from optional Time.Time values to optional Text representations during canister upgrades via (with migration = Migration.run).",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-19",
-      "title": "Permission requests and admin approvals UI",
-      "synonyms": [
-        "MyPermissions",
-        "PermissionApprovals",
-        "access requests"
-      ],
-      "description": "Adds a permissions/role access workflow surfaced in the UI: users can view their current permissions/status and submit access-related requests; admins can review and approve/reject pending permission requests from a dedicated admin screen. Integrates with backend access-control changes to support managed access beyond the initial admin bootstrap.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "feature-translate-all-visible-frontend-ui-strings-to-italian-across-the-entire-app-login-page-onboarding-profile-setup-modal-dashboard-attendance-pages-holiday-pages-permissions-pages-admin-approvals-team-overview-reporting-invite-management-headers-menus-buttons-labels-empty-states-validation-messages-toast-alert-text-and-any-helper-text-ensure-consistent-terminology-for-roles-and-workflows-e-g-admin-amministratore-employee-dipendente-across-all-screens",
-      "title": "Translate all visible frontend UI strings to Italian across the entire app (login page, onboarding, profile setup modal, dashboard, attendance pages, holiday pages, permissions pages, admin approvals, team overview/reporting, invite management, headers/menus, buttons, labels, empty states, validation messages, toast/alert text, and any helper text). Ensure consistent terminology for roles and workflows (e.g., Admin/Amministratore, Employee/Dipendente) across all screens.",
+      "id": "feature-add-the-ability-to-create-invite-links-specifically-for-the-administrator-role-allowing-admins-to-share-administrative-privileges-with-new-users",
+      "title": "Add the ability to create invite links specifically for the administrator role, allowing admins to share administrative privileges with new users",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-translate-all-domain-labels-for-attendance-statuses-activity-types-request-statuses-and-role-labels-into-italian-wherever-they-appear-badges-dropdowns-tables-summaries-and-exports-initiated-from-the-ui-centralize-these-label-mappings-so-the-same-italian-terms-are-used-everywhere",
-      "title": "Translate all domain labels for attendance statuses, activity types, request statuses, and role labels into Italian wherever they appear (badges, dropdowns, tables, summaries, and exports initiated from the UI). Centralize these label mappings so the same Italian terms are used everywhere.",
+      "id": "feature-display-user-names-instead-of-identity-codes-in-the-team-overview-panoramica-team-to-meet-regulatory-compliance-requirements-for-managing-team-members",
+      "title": "Display user names instead of identity codes in the Team Overview (Panoramica team) to meet regulatory compliance requirements for managing team members",
       "reqIds": [
-        "REQ-3"
+        "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-simple-maintainable-localization-structure-for-italian-strings-on-the-frontend-e-g-a-single-source-of-truth-dictionary-module-and-refactor-existing-components-to-use-it-without-modifying-any-files-under-frontend-paths-marked-as-immutable-by-the-platform-constraints",
-      "title": "Add a simple, maintainable localization structure for Italian strings on the frontend (e.g., a single source-of-truth dictionary/module) and refactor existing components to use it, without modifying any files under frontend paths marked as immutable by the platform constraints.",
+      "id": "feature-show-the-creation-date-and-time-for-each-generated-invite-link-in-the-invite-management-interface",
+      "title": "Show the creation date and time for each generated invite link in the invite management interface",
       "reqIds": [
-        "REQ-5"
+        "REQ-3"
       ],
       "version": 1
     }
@@ -241,84 +39,24 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Localizzare completamente l’interfaccia in italiano (tutte le schermate, etichette, messaggi, export/report)",
+      "summary": "Create invite links for admin role sharing",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Onboarding post-Internet Identity: permettere di scegliere il profilo/ruolo iniziale (amministratore vs dipendente) prima di inserire nome completo e ruolo",
+      "summary": "Display user names instead of codes in Team Overview for regulatory compliance",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Aggiungere nuovi valori nella sezione Stato: Malattia e Banca ore",
+      "summary": "Show creation date and time when generating invite links",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Aggiungere nuove opzioni in 'Attività svolta': Weekend e Laboratori",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Aggiungere un pulsante per passare dalla modalità Dipendente alla modalità Amministratore per accedere a report e analisi dipendenti",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Aggiungere una sezione per richiedere i permessi (richieste accesso/permessi con flusso di approvazione admin)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Localize all frontend date/time presentation to Italian formatting (including day/month names, short/long date formats, and any relative labels used in filters like day/week/month views). Ensure the formatting is consistent between personal views (e.g., MyAttendance/MyHolidays/MyPermissions) and admin views (e.g., TeamOverview, approvals).",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Localize backend-generated user-facing content used by the UI and exports, including CSV export column headers and any textual fields that are not purely user-entered. Ensure CSV exports produced from admin reporting and request modules use Italian headers and Italian date formatting.",
-      "reqIds": [
-        "REQ-4"
-      ],
       "status": "pending"
     }
   ],
-  "architectural_notes": [
-    "Frontend is a React SPA using @tanstack/react-query for data fetching/caching and mutation-driven cache invalidation.",
-    "Authentication is handled via Internet Identity using @dfinity/auth-client; identities are persisted and restored on reload.",
-    "Backend is a Motoko canister exposing query/shared methods; authorization is enforced server-side via a dedicated AccessControl module (roles: admin/user/guest).",
-    "Actor creation is centralized in useActor; it creates an authenticated or anonymous actor and calls initializeAccessControl when available.",
-    "Role-based UI: Dashboard toggles between personal and admin views based on isCallerAdmin.",
-    "Time representation uses nanosecond timestamps (BigInt in frontend; Time.Time in Motoko) for attendance dates, request ranges, and audit timestamps.",
-    "Attendance data model includes status, activity union (project/service/generic), optional notes, start/end time strings, break duration, and derived hours worked.",
-    "Audit trail is implemented via AttendanceModification records per user (created/updated/deleted) with old/new record snapshots.",
-    "Invite/onboarding subsystem is implemented as a separate Motoko module (invite-links-module) managing invite codes and RSVPs, integrated into frontend onboarding flow.",
-    "UI stack uses TailwindCSS (OKLCH theme variables) + shadcn-style UI components, next-themes for dark/light theme toggle, and sonner for toast notifications."
-  ],
-  "known_issues": [
-    "Backend CSV date formatting (formatDateItalian) uses simplified 365-day years and 30-day months; exported dates can be incorrect, especially across months/leap years.",
-    "Backend monthly/weekly period logic uses fixed durations (7 days, 30 days in nanoseconds) and does not align to real calendar months; results may be inaccurate around month boundaries.",
-    "Admin daily report getAttendanceByDay matches records by exact timestamp equality; it requires clients to normalize dates identically (e.g., midnight) or records won’t be found.",
-    "Frontend frequently converts BigInt nanosecond timestamps to Number for Date construction; while current epoch values are within JS safe integer bounds in milliseconds, this pattern risks overflow if extended or misused.",
-    "TeamOverview computes dayDate using currentDate.setHours(...), which mutates the Date object (and can subtly affect navigation/state-derived calculations).",
-    "Invite RSVP storage is keyed by RSVP name (Map<Text, RSVP>); duplicate names can overwrite prior entries, losing history.",
-    "Holiday balance is displayed from the user profile but is not enforced or updated in backend upon holiday request approval/rejection (no deductions/validation).",
-    "Access control assigns the first non-anonymous initializer as admin automatically; without an explicit bootstrap process this can be risky in production deployments.",
-    "Onboarding clears the invite code from the URL but does not explicitly redirect after success (UI suggests redirecting but code shown does not perform navigation).",
-    "Backend user role lookup traps for unregistered principals (\"User is not registered\"); correct behavior relies on initializeAccessControl being called before other protected methods."
-  ],
-  "isFixRequest": false,
-  "gameProjectType": "none",
-  "projectName": "Gestione Presenze",
+  "projectName": "Add admin invites, user names in team overview, and invite timestamps",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

@@ -200,6 +200,7 @@ export interface backendInterface {
     exportHolidayRequestsAsCSV(): Promise<string>;
     exportPermissionRequestsAsCSV(): Promise<string>;
     generateInviteCode(): Promise<string>;
+    generateInviteCodeWithRole(role: UserRole): Promise<string>;
     getAllAttendanceRecords(): Promise<Array<[Principal, Array<AttendanceRecord>]>>;
     getAllHolidayRequests(): Promise<Array<HolidayRequest>>;
     getAllPermissionRequests(): Promise<Array<PermissionRequest>>;
@@ -370,6 +371,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.generateInviteCode();
+            return result;
+        }
+    }
+    async generateInviteCodeWithRole(arg0: UserRole): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.generateInviteCodeWithRole(to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.generateInviteCodeWithRole(to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg0));
             return result;
         }
     }

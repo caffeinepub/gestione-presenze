@@ -118,6 +118,7 @@ export interface backendInterface {
     exportHolidayRequestsAsCSV(): Promise<string>;
     exportPermissionRequestsAsCSV(): Promise<string>;
     generateInviteCode(): Promise<string>;
+    generateInviteCodeWithRole(role: UserRole): Promise<string>;
     getAllAttendanceRecords(): Promise<Array<[Principal, Array<AttendanceRecord>]>>;
     getAllHolidayRequests(): Promise<Array<HolidayRequest>>;
     getAllPermissionRequests(): Promise<Array<PermissionRequest>>;

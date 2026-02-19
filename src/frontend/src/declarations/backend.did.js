@@ -116,6 +116,7 @@ export const idlService = IDL.Service({
   'exportHolidayRequestsAsCSV' : IDL.Func([], [IDL.Text], ['query']),
   'exportPermissionRequestsAsCSV' : IDL.Func([], [IDL.Text], ['query']),
   'generateInviteCode' : IDL.Func([], [IDL.Text], []),
+  'generateInviteCodeWithRole' : IDL.Func([UserRole], [IDL.Text], []),
   'getAllAttendanceRecords' : IDL.Func(
       [],
       [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Vec(AttendanceRecord)))],
@@ -323,6 +324,7 @@ export const idlFactory = ({ IDL }) => {
     'exportHolidayRequestsAsCSV' : IDL.Func([], [IDL.Text], ['query']),
     'exportPermissionRequestsAsCSV' : IDL.Func([], [IDL.Text], ['query']),
     'generateInviteCode' : IDL.Func([], [IDL.Text], []),
+    'generateInviteCodeWithRole' : IDL.Func([UserRole], [IDL.Text], []),
     'getAllAttendanceRecords' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Vec(AttendanceRecord)))],

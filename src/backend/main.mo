@@ -1,5 +1,6 @@
 import AccessControl "authorization/access-control";
 import InviteLinksModule "invite-links/invite-links-module";
+import Migration "migration";
 import Principal "mo:base/Principal";
 import OrderedMap "mo:base/OrderedMap";
 import Iter "mo:base/Iter";
@@ -10,8 +11,8 @@ import List "mo:base/List";
 import Random "mo:base/Random";
 import Int "mo:base/Int";
 
-
- actor AttendanceManagement {
+(with migration = Migration.run)
+actor AttendanceManagement {
   let accessControlState = AccessControl.initState();
 
   public shared ({ caller }) func initializeAccessControl() : async () {
@@ -119,7 +120,6 @@ import Int "mo:base/Int";
     reason : Text;
   };
 
-  // New PermissionRequest type
   public type PermissionRequest = {
     id : Nat;
     user : Principal;
@@ -142,7 +142,6 @@ import Int "mo:base/Int";
   var holidayRequests = natMap.empty<HolidayRequest>();
   var nextHolidayRequestId = 0;
 
-  // New permissionRequests storage
   var permissionRequests = natMap.empty<PermissionRequest>();
   var nextPermissionRequestId = 0;
 
@@ -641,7 +640,18 @@ import Int "mo:base/Int";
   // Invite links and RSVP system
   let inviteState = InviteLinksModule.initState();
 
-  // Generate invite code (admin only)
+  // Generate invite code with role (admin only)
+  public shared ({ caller }) func generateInviteCodeWithRole(role : AccessControl.UserRole) : async Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Debug.trap("Non autorizzato: solo gli amministratori possono generare codici di invito");
+    };
+    let blob = await Random.blob();
+    let code = InviteLinksModule.generateUUID(blob);
+    InviteLinksModule.generateInviteCode(inviteState, code);
+    code;
+  };
+
+  // Generate invite code (admin only) - deprecated, use generateInviteCodeWithRole instead
   public shared ({ caller }) func generateInviteCode() : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Debug.trap("Non autorizzato: solo gli amministratori possono generare codici di invito");
@@ -652,9 +662,16 @@ import Int "mo:base/Int";
     code;
   };
 
+  func roleText(role : AccessControl.UserRole) : Text {
+    switch (role) {
+      case (#admin) "admin";
+      case (#user) "user";
+      case (#guest) "guest";
+    };
+  };
+
   // Submit RSVP (public, but requires valid invite code)
   public shared func submitRSVP(name : Text, attending : Bool, inviteCode : Text) : async () {
-    // Validate invite code before allowing RSVP submission
     InviteLinksModule.submitRSVP(inviteState, name, attending, inviteCode);
   };
 
@@ -688,7 +705,6 @@ import Int "mo:base/Int";
             switch (record.hoursWorked) {
               case (?hours) totalHours += hours;
               case null {
-                // Fallback to default calculation if hoursWorked not set
                 switch (record.status) {
                   case (#present) totalHours += 8;
                   case (#remoteWork) totalHours += 8;
@@ -718,7 +734,6 @@ import Int "mo:base/Int";
           switch (record.hoursWorked) {
             case (?hours) userTotalHours += hours;
             case null {
-              // Fallback to default calculation if hoursWorked not set
               switch (record.status) {
                 case (#present) userTotalHours += 8;
                 case (#remoteWork) userTotalHours += 8;

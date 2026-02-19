@@ -1,275 +1,80 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Localizzazione completa UI in Italiano (frontend)",
+  "title": "Add admin invites, user names in team overview, and invite timestamps",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Tradurre tutte le stringhe UI visibili in italiano in ogni schermata/modale raggiungibile e rendere coerente la terminologia (ruoli e workflow) in tutta l’app.",
+      "summary": "Add the ability to create invite links specifically for the administrator role, allowing admins to share administrative privileges with new users",
       "acceptanceCriteria": [
-        "No English UI copy remains in any interactive screen or modal reachable from the normal app navigation (except proper nouns/technical terms where unavoidable).",
-        "Terminology is consistent across modules (attendance, holidays, permissions, admin reporting, invites, onboarding)."
+        "InviteManagement component includes a role selector (user/admin) when generating invites",
+        "Generated invite codes carry role information",
+        "Onboarding flow respects the invite's designated role and assigns it to new profiles",
+        "Admin invites are visually distinguished in the invite list"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Dashboard.tsx",
+          "path": "frontend/src/components/InviteManagement.tsx",
           "operation": "modify",
-          "description": "Sostituire tutte le stringhe residue in inglese (es. etichette ruolo 'Employee/Administrator', pulsanti 'Personal View/Admin View', tab 'Permissions') con traduzioni italiane, usando la struttura di localizzazione centralizzata per garantire coerenza terminologica."
+          "description": "Add a role selector dropdown (user/admin) to the invite generation section. When generating an invite, call either generateInviteCode() for user invites or generateInviteCodeWithRole(UserRole.admin) for admin invites based on the selection. Display a role badge next to each invite code in the list to visually distinguish admin invites from user invites. Update the UI to show which invites grant admin privileges."
         },
         {
-          "path": "frontend/src/components/ProfileSetupModal.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Tradurre in italiano l’intero contenuto del modale (titolo, descrizione, etichette campi, placeholder, CTA, stati di loading, toast e messaggi di errore) e allineare la terminologia dei ruoli a quella usata nel resto dell’app tramite dizionario centralizzato."
-        },
-        {
-          "path": "frontend/src/components/MyPermissions.tsx",
-          "operation": "modify",
-          "description": "Tradurre in italiano tutte le stringhe UI e i messaggi (badge 'Pending/Approved/Rejected', etichette form, placeholder, empty state, toast) e uniformare la terminologia con le pagine admin e personali tramite mapping centralizzati."
-        },
-        {
-          "path": "frontend/src/components/PermissionApprovals.tsx",
-          "operation": "modify",
-          "description": "Tradurre in italiano tutte le stringhe UI (titoli, descrizioni, filtri, badge stato, azioni Approve/Reject, empty state, toast) e uniformare le etichette di tipo richiesta e stato con i mapping centralizzati."
-        },
-        {
-          "path": "frontend/src/lib/attendanceLabels.ts",
-          "operation": "modify",
-          "description": "Rimuovere testo inglese dalle etichette di stato/attività e delegare la resa testuale a mapping centralizzati condivisi (così la stessa value interna produce sempre la stessa etichetta italiana)."
-        },
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Verificare e completare la traduzione italiana di ogni stringa visibile (inclusi alt text, card description, footer), sostituendo eventuali stringhe hardcoded con chiavi della localizzazione centralizzata."
+          "description": "Add a new mutation hook useGenerateInviteCodeWithRole that accepts a UserRole parameter and calls actor.generateInviteCodeWithRole(role). This hook will be used by InviteManagement to create role-specific invite codes. Ensure proper error handling and query invalidation after successful generation."
         },
         {
           "path": "frontend/src/components/OnboardingFlow.tsx",
           "operation": "modify",
-          "description": "Verificare e completare la traduzione italiana di form, step labels, helper text e toast; assicurare coerenza terminologica (Dipendente/Collaboratore/Amministratore) tramite dizionario centralizzato."
+          "description": "After successfully submitting the RSVP and creating the profile in step 3, check if the invite code grants admin privileges by calling actor.getCallerUserRole(). If the role is admin, display a notification informing the user they have been granted administrator access. This ensures users understand their assigned role during onboarding."
         },
         {
-          "path": "frontend/src/components/MyAttendance.tsx",
+          "path": "frontend/src/lib/domainLabels.ts",
           "operation": "modify",
-          "description": "Tradurre le stringhe residue in inglese presenti in dropdown e label (es. 'Sickness', 'Time Bank', 'Workshops') e assicurare che opzioni/badge usino sempre mapping centralizzati in italiano."
-        },
-        {
-          "path": "frontend/src/components/HolidayApprovals.tsx",
-          "operation": "modify",
-          "description": "Verificare che tutte le stringhe (filtri, azioni, empty state, toast) siano in italiano e sostituire eventuali label duplicate con chiavi della localizzazione centralizzata per coerenza."
-        },
-        {
-          "path": "frontend/src/components/MyHolidays.tsx",
-          "operation": "modify",
-          "description": "Verificare che tutte le stringhe (form, KPI card, empty state) siano in italiano e allineare le etichette di stato richiesta ferie ai mapping centralizzati."
-        },
-        {
-          "path": "frontend/src/components/TeamOverview.tsx",
-          "operation": "modify",
-          "description": "Verificare traduzioni italiane nelle aree admin (export, KPI, filtri, empty state, toast) e rimuovere eventuali residui inglesi; uniformare testi con localizzazione centralizzata."
-        },
-        {
-          "path": "frontend/src/components/InviteManagement.tsx",
-          "operation": "modify",
-          "description": "Verificare traduzione completa italiana su tab, stati, helper text, empty state e toast; uniformare label e messaggi tramite localizzazione centralizzata."
-        },
-        {
-          "path": "frontend/src/components/Header.tsx",
-          "operation": "modify",
-          "description": "Verificare che tutte le stringhe del menu account e accessibilità siano in italiano e spostarle su chiavi della localizzazione centralizzata (es. sr-only del tema, 'Il Mio Account', 'Esci')."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Spostare la stringa di caricamento e qualsiasi testo UI in chiavi centralizzate per garantire assenza di copy inglese e coerenza tra flussi (login/onboarding/dashboard)."
+          "description": "Add Italian labels for invite role types if not already present, ensuring consistency with existing role translations. Update the getUserRoleLabel function to support displaying role information in the InviteManagement UI."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Localizzare la presentazione di date/ore in formato italiano in modo coerente tra viste personali e admin (incluse intestazioni e label dei filtri giorno/settimana/mese).",
+      "summary": "Display user names instead of identity codes in the Team Overview to meet regulatory compliance requirements for managing team members",
       "acceptanceCriteria": [
-        "All dates/times shown in the UI are formatted in Italian locale style consistently across pages.",
-        "Day/week/month filter labels and any date-based headings are displayed in Italian."
+        "TeamOverview component queries and displays user profile names alongside attendance data",
+        "User names are shown in attendance records instead of principal/identity codes",
+        "CSV export includes user names rather than codes",
+        "All team member identifiers are human-readable throughout the overview interface"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/lib/utils.ts",
-          "operation": "modify",
-          "description": "Rafforzare i helper di formattazione data/ora in italiano come single source-of-truth (es. aggiungere helper per date range e/o date+time se necessario) e indirizzare l’app a usarli in modo uniforme."
-        },
-        {
-          "path": "frontend/src/components/InviteManagement.tsx",
-          "operation": "modify",
-          "description": "Sostituire l’uso diretto di toLocaleDateString('it-IT') con helper centralizzati di formattazione data per uniformare lo stile (codici invito e timestamp RSVP)."
-        },
-        {
-          "path": "frontend/src/components/MyAttendance.tsx",
-          "operation": "modify",
-          "description": "Standardizzare la formattazione di date/intestazioni (es. label range giorno/settimana/mese, date in tabella e nei dialog) usando helper comuni e assicurando output coerente in tutta la sezione presenze."
-        },
-        {
-          "path": "frontend/src/components/MyHolidays.tsx",
-          "operation": "modify",
-          "description": "Standardizzare la formattazione delle date nelle tabelle e nelle intestazioni (mese corrente, date inizio/fine) usando helper comuni per avere coerenza con viste admin."
-        },
-        {
-          "path": "frontend/src/components/MyPermissions.tsx",
-          "operation": "modify",
-          "description": "Standardizzare la formattazione delle date (selettori, tabella richieste) usando helper comuni; garantire coerenza tra la vista personale e le viste approvazioni admin."
-        },
-        {
-          "path": "frontend/src/components/HolidayApprovals.tsx",
-          "operation": "modify",
-          "description": "Standardizzare la formattazione date nelle tabelle approvazioni ferie usando helper comuni (stesso formato delle pagine personali)."
-        },
-        {
-          "path": "frontend/src/components/PermissionApprovals.tsx",
-          "operation": "modify",
-          "description": "Standardizzare la formattazione date nelle tabelle approvazioni permessi usando helper comuni (stesso formato delle pagine personali)."
-        },
-        {
           "path": "frontend/src/components/TeamOverview.tsx",
           "operation": "modify",
-          "description": "Standardizzare la formattazione di date/intestazioni e i label di range (giorno/settimana/mese) usando helper comuni; mantenere i label dei filtri in italiano in modo consistente."
+          "description": "Modify the component to fetch user profiles for all principals displayed in the attendance data using actor.getUserProfile(principal). Store the profile data in a Map<string, UserProfile> keyed by principal. Replace all principal.toText() displays with the corresponding user's name from their profile. Update the table rendering logic to show user names in the first column instead of truncated principals. For CSV export, replace principal strings with user names in the exported data. Handle cases where a profile might not exist by displaying a fallback like 'Unknown User' with the principal in parentheses."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a new query hook useGetUserProfile(principal: Principal) that fetches a single user profile by calling actor.getUserProfile(principal). This hook will be used by TeamOverview to load names for all team members. Add a batch query hook useGetMultipleUserProfiles(principals: Principal[]) that efficiently fetches multiple profiles and returns them as a Map for easy lookup."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Tradurre e centralizzare le etichette di dominio (stati presenze, tipi attività, stati richieste, ruoli) così che gli stessi valori interni rendano sempre gli stessi termini italiani ovunque (badge, dropdown, tabelle, riepiloghi).",
+      "summary": "Show the creation date and time for each generated invite link in the invite management interface",
       "acceptanceCriteria": [
-        "All badge texts and dropdown option labels for attendance/activity/request status are in Italian.",
-        "The same internal values always render to the same Italian label across the app."
+        "InviteManagement component displays formatted creation date and time for each invite",
+        "Timestamps are shown in Italian locale format (dd/MM/yyyy HH:mm)",
+        "Newly created invites immediately show their creation timestamp in the UI"
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/lib/domainLabels.ts",
-          "operation": "create",
-          "description": "Creare mapping centralizzati (in italiano) per: AttendanceStatus, ActivityType (incluse varianti project/service/generic/weekend/workshops), stati richieste (pending/approved/rejected), tipi permesso (generic/medical/familyEmergency) e ruoli utente (admin/user/guest, e/o ruolo profilo Dipendente/Amministratore dove visualizzato)."
-        },
-        {
-          "path": "frontend/src/lib/attendanceLabels.ts",
-          "operation": "modify",
-          "description": "Refactor per usare i mapping di frontend/src/lib/domainLabels.ts per label e badge variant; rimuovere stringhe inglesi e fallback non italiani, garantendo resa coerente in tutta l’app."
-        },
-        {
-          "path": "frontend/src/components/MyAttendance.tsx",
-          "operation": "modify",
-          "description": "Sostituire label hardcoded di stato/attività (dropdown, badge, tabelle, dialog) con funzioni/mapping centralizzati di dominio per garantire coerenza e assenza di inglese."
-        },
-        {
-          "path": "frontend/src/components/TeamOverview.tsx",
-          "operation": "modify",
-          "description": "Assicurare che stato/attività rendano tramite mapping centralizzati (badge e testo), in modo identico alla vista personale presenze."
-        },
-        {
-          "path": "frontend/src/components/MyHolidays.tsx",
-          "operation": "modify",
-          "description": "Allineare label di stato richiesta ferie ai mapping centralizzati (badge) per coerenza con HolidayApprovals e altre viste."
-        },
-        {
-          "path": "frontend/src/components/HolidayApprovals.tsx",
-          "operation": "modify",
-          "description": "Allineare label di stato richiesta ferie ai mapping centralizzati (badge) per coerenza con MyHolidays e altre viste."
-        },
-        {
-          "path": "frontend/src/components/MyPermissions.tsx",
-          "operation": "modify",
-          "description": "Allineare label di stato richiesta permesso e label di tipo richiesta permesso ai mapping centralizzati (badge e dropdown) per coerenza con la vista admin."
-        },
-        {
-          "path": "frontend/src/components/PermissionApprovals.tsx",
-          "operation": "modify",
-          "description": "Allineare label di stato e tipo richiesta permesso ai mapping centralizzati e tradurre eventuale testo residuo inglese (badge, filtri, azioni)."
-        },
-        {
-          "path": "frontend/src/pages/Dashboard.tsx",
-          "operation": "modify",
-          "description": "Sostituire la resa dei ruoli mostrati all’utente (es. 'Employee/Administrator') con mapping centralizzati di dominio per coerenza su tutte le schermate."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Introdurre una struttura di localizzazione semplice e manutenibile per l’italiano sul frontend e rifattorizzare i componenti per usarla, senza modificare path frontend immutabili.",
-      "acceptanceCriteria": [
-        "Italian UI strings are stored in a centralized place and referenced from components rather than duplicated ad-hoc.",
-        "No changes are made to immutable frontend paths; localization is implemented via editable files only."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/lib/i18n/it.ts",
-          "operation": "create",
-          "description": "Creare un dizionario italiano (single source-of-truth) che contenga le stringhe UI dell’app (login, onboarding, profilo, dashboard, presenze, ferie, permessi, approvazioni admin, inviti, header/menu, empty state, validazione, toast)."
-        },
-        {
-          "path": "frontend/src/lib/i18n/index.ts",
-          "operation": "create",
-          "description": "Creare una piccola utility di localizzazione (es. funzione t(key) e helper per interpolazioni semplici) che esponga le stringhe italiane in modo consistente e riusabile senza dipendenze esterne."
-        },
-        {
-          "path": "frontend/src/pages/Dashboard.tsx",
-          "operation": "modify",
-          "description": "Rifattorizzare le stringhe UI per usare la utility i18n centralizzata (frontend/src/lib/i18n) e rimuovere duplicazioni/variazioni terminologiche tra viste personali e admin."
-        },
-        {
-          "path": "frontend/src/components/ProfileSetupModal.tsx",
-          "operation": "modify",
-          "description": "Spostare tutte le stringhe (inclusi toast/validazione/loading) su chiavi della utility i18n centralizzata, assicurando che nessun testo inglese resti nel flusso di creazione profilo."
-        },
-        {
-          "path": "frontend/src/components/MyPermissions.tsx",
-          "operation": "modify",
-          "description": "Spostare tutte le stringhe UI e toast su chiavi i18n centralizzate e usare label di dominio centralizzate (stati/tipi) per evitare duplicazioni ad-hoc."
-        },
-        {
-          "path": "frontend/src/components/PermissionApprovals.tsx",
-          "operation": "modify",
-          "description": "Spostare tutte le stringhe UI e toast su chiavi i18n centralizzate e usare label di dominio centralizzate (stati/tipi)."
-        },
-        {
-          "path": "frontend/src/components/MyAttendance.tsx",
-          "operation": "modify",
-          "description": "Spostare testi UI (titoli, descrizioni, helper text, dialog, empty state, validazione, toast) su chiavi i18n centralizzate, preservando il comportamento; evitare modifiche a path immutabili."
-        },
-        {
-          "path": "frontend/src/components/MyHolidays.tsx",
-          "operation": "modify",
-          "description": "Spostare testi UI (form, KPI, empty state, toast) su chiavi i18n centralizzate per ridurre duplicazioni e migliorare manutenibilità."
-        },
-        {
-          "path": "frontend/src/components/HolidayApprovals.tsx",
-          "operation": "modify",
-          "description": "Spostare testi UI (filtri, tabelle, azioni, empty state, toast) su chiavi i18n centralizzate per garantire coerenza e facilità di manutenzione."
-        },
-        {
-          "path": "frontend/src/components/TeamOverview.tsx",
-          "operation": "modify",
-          "description": "Spostare testi UI (export, KPI, filtri, empty state, toast) su chiavi i18n centralizzate; mantenere la navigabilità invariata e senza introdurre nuove rotte."
-        },
         {
           "path": "frontend/src/components/InviteManagement.tsx",
           "operation": "modify",
-          "description": "Spostare testi UI (titoli, descrizioni, tab, empty state, toast) su chiavi i18n centralizzate, preservando la struttura attuale della pagina."
+          "description": "Update the invite code list rendering to display the creation timestamp for each InviteCode object. Use the existing formatDateTime function from lib/utils.ts to format the code.created timestamp in Italian format (dd/MM/yyyy HH:mm). Add a new column or inline display showing 'Creato il: <formatted date>' next to each invite code. Ensure the timestamp updates immediately after generating a new invite code."
         },
         {
-          "path": "frontend/src/components/Header.tsx",
+          "path": "frontend/src/lib/utils.ts",
           "operation": "modify",
-          "description": "Spostare etichette e testi accessibili (sr-only) su chiavi i18n centralizzate, mantenendo invariata la logica di logout e theme toggle."
-        },
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Spostare tutte le stringhe visibili e testi ausiliari su chiavi i18n centralizzate, includendo lo stato 'isLoggingIn' e i testi condizionali legati all’invito."
-        },
-        {
-          "path": "frontend/src/components/OnboardingFlow.tsx",
-          "operation": "modify",
-          "description": "Spostare tutte le stringhe (step, helper text, CTA, error handling toast) su chiavi i18n centralizzate e standardizzare terminologia (Dipendente/Collaboratore)."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Spostare le stringhe globali (es. stato di caricamento) su i18n centralizzato, garantendo nessuna modifica a file/pattern immutabili e nessuna introduzione di nuove feature."
+          "description": "Ensure the formatDateTime function correctly handles InviteCode.created timestamps (which are Time/bigint nanoseconds). If not already present, add a formatInviteTimestamp helper that converts the bigint timestamp to a Date object and formats it as dd/MM/yyyy HH:mm using Italian locale. This provides a consistent timestamp format across the invite management interface."
         }
       ]
     }

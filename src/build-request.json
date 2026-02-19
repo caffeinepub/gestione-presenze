@@ -1,101 +1,78 @@
 {
   "kind": "build_request",
-  "title": "Fully localize the app UI to Italian",
+  "title": "Add admin invites, user names in team overview, and invite timestamps",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Translate all visible frontend UI strings to Italian across the entire app (login page, onboarding, profile setup modal, dashboard, attendance pages, holiday pages, permissions pages, admin approvals, team overview/reporting, invite management, headers/menus, buttons, labels, empty states, validation messages, toast/alert text, and any helper text). Ensure consistent terminology for roles and workflows (e.g., Admin/Amministratore, Employee/Dipendente) across all screens.",
-      "target": "frontend",
+      "text": "Add the ability to create invite links specifically for the administrator role, allowing admins to share administrative privileges with new users",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-12"
         ],
         "quotes": [
-          "perfetto. ora puoi tradurre tutto in italiano per favore"
+          "poter creare un link di invito anche per un amministratore, così da condividere l'opzione amministratore"
         ]
       },
       "acceptanceCriteria": [
-        "No English UI copy remains in any interactive screen or modal reachable from the normal app navigation (except proper nouns/technical terms where unavoidable).",
-        "Terminology is consistent across modules (attendance, holidays, permissions, admin reporting, invites, onboarding)."
+        "InviteManagement component includes a role selector (user/admin) when generating invites",
+        "Backend createInviteCode accepts an optional role parameter",
+        "Generated invite codes carry role information",
+        "Onboarding flow respects the invite's designated role and assigns it to new profiles",
+        "Admin invites are visually distinguished in the invite list"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Localize all frontend date/time presentation to Italian formatting (including day/month names, short/long date formats, and any relative labels used in filters like day/week/month views). Ensure the formatting is consistent between personal views (e.g., MyAttendance/MyHolidays/MyPermissions) and admin views (e.g., TeamOverview, approvals).",
+      "text": "Display user names instead of identity codes in the Team Overview (Panoramica team) to meet regulatory compliance requirements for managing team members",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-12"
         ],
         "quotes": [
-          "perfetto. ora puoi tradurre tutto in italiano per favore"
+          "nella Panoramica team gli utenti vengono individuati solo con un codice, invece a noi serve sapere il loro nome per poter gestire gli adempimenti normativi"
         ]
       },
       "acceptanceCriteria": [
-        "All dates/times shown in the UI are formatted in Italian locale style consistently across pages.",
-        "Day/week/month filter labels and any date-based headings are displayed in Italian."
+        "TeamOverview component queries and displays user profile names alongside attendance data",
+        "User names are shown in attendance records instead of principal/identity codes",
+        "CSV export includes user names rather than codes",
+        "All team member identifiers are human-readable throughout the overview interface"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Translate all domain labels for attendance statuses, activity types, request statuses, and role labels into Italian wherever they appear (badges, dropdowns, tables, summaries, and exports initiated from the UI). Centralize these label mappings so the same Italian terms are used everywhere.",
-      "target": "frontend",
+      "text": "Show the creation date and time for each generated invite link in the invite management interface",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-12"
         ],
         "quotes": [
-          "perfetto. ora puoi tradurre tutto in italiano per favore"
+          "quando si generano i link di invito fai vedere anche l'orario di creazione e la data"
         ]
       },
       "acceptanceCriteria": [
-        "All badge texts and dropdown option labels for attendance/activity/request status are in Italian.",
-        "The same internal values always render to the same Italian label across the app."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Localize backend-generated user-facing content used by the UI and exports, including CSV export column headers and any textual fields that are not purely user-entered. Ensure CSV exports produced from admin reporting and request modules use Italian headers and Italian date formatting.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "perfetto. ora puoi tradurre tutto in italiano per favore"
-        ]
-      },
-      "acceptanceCriteria": [
-        "CSV files exported from the app contain Italian column headers and Italian-formatted dates/times.",
-        "Any backend-provided user-facing strings used in the UI (if any) are returned in Italian."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Add a simple, maintainable localization structure for Italian strings on the frontend (e.g., a single source-of-truth dictionary/module) and refactor existing components to use it, without modifying any files under frontend paths marked as immutable by the platform constraints.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "perfetto. ora puoi tradurre tutto in italiano per favore"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Italian UI strings are stored in a centralized place and referenced from components rather than duplicated ad-hoc.",
-        "No changes are made to immutable frontend paths; localization is implemented via editable files only."
+        "Backend stores timestamp when each invite code is created",
+        "InviteManagement component displays formatted creation date and time for each invite",
+        "Timestamps are shown in Italian locale format (dd/MM/yyyy HH:mm)",
+        "Newly created invites immediately show their creation timestamp in the UI"
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend paths marked as immutable (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui).",
-    "Respect the single-actor backend architecture: all Motoko logic remains in backend/main.mo; add backend/migration.mo only if a state upgrade is required."
+    "Preserve all existing user data including profiles, attendance records, holidays, and permissions",
+    "Maintain compatibility with existing invite codes already in use",
+    "Do not modify the Internet Identity authentication flow",
+    "Keep the single-actor backend architecture"
   ],
   "nonGoals": [
-    "Do not add new product features beyond Italian localization (no new workflows, no new modules).",
-    "Do not introduce third-party localization platforms or external services."
+    "Changing the overall invite system workflow",
+    "Modifying existing user roles or permissions structure beyond adding admin invite capability",
+    "Redesigning the Team Overview layout or statistics calculations",
+    "Adding new regulatory compliance features beyond displaying user names"
   ],
   "imageRequirements": {
     "required": [],

@@ -1,23 +1,32 @@
 import { useState } from 'react';
-import { useGenerateInviteCode, useGetInviteCodes, useGetAllRSVPs } from '../hooks/useQueries';
+import { useGenerateInviteCodeWithRole, useGetInviteCodes, useGetAllRSVPs } from '../hooks/useQueries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Copy, Mail, Plus, CheckCircle2, Clock, Users } from 'lucide-react';
+import { Copy, Mail, Plus, CheckCircle2, Clock, Users, Shield, User } from 'lucide-react';
+import { UserRole } from '../backend';
+import { formatDateTime } from '../lib/utils';
 
 export default function InviteManagement() {
   const { data: inviteCodes, isLoading: codesLoading } = useGetInviteCodes();
   const { data: rsvps, isLoading: rsvpsLoading } = useGetAllRSVPs();
-  const generateCode = useGenerateInviteCode();
+  const generateCodeWithRole = useGenerateInviteCodeWithRole();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.user);
 
   const handleGenerateCode = async () => {
     try {
-      const code = await generateCode.mutateAsync();
-      toast.success('Codice di invito generato con successo');
+      const code = await generateCodeWithRole.mutateAsync(selectedRole);
+      toast.success(
+        selectedRole === UserRole.admin 
+          ? 'Codice di invito amministratore generato con successo' 
+          : 'Codice di invito utente generato con successo'
+      );
     } catch (error) {
       toast.error('Impossibile generare il codice di invito');
       console.error(error);
@@ -46,20 +55,56 @@ export default function InviteManagement() {
             Genera e gestisci i codici di invito per i nuovi membri del team
           </p>
         </div>
-        <Button onClick={handleGenerateCode} disabled={generateCode.isPending}>
-          {generateCode.isPending ? (
-            <>
-              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-              Generazione...
-            </>
-          ) : (
-            <>
-              <Plus className="mr-2 h-4 w-4" />
-              Genera Codice
-            </>
-          )}
-        </Button>
       </div>
+
+      {/* Generate Invite Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Genera Nuovo Invito</CardTitle>
+          <CardDescription>
+            Seleziona il ruolo e genera un codice di invito per un nuovo membro
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <div className="flex-1 space-y-2">
+              <Label htmlFor="role-select">Ruolo</Label>
+              <Select value={selectedRole} onValueChange={(value) => setSelectedRole(value as UserRole)}>
+                <SelectTrigger id="role-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UserRole.user}>
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      <span>Utente</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value={UserRole.admin}>
+                    <div className="flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
+                      <span>Amministratore</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={handleGenerateCode} disabled={generateCodeWithRole.isPending} className="sm:w-auto">
+              {generateCodeWithRole.isPending ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                  Generazione...
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Genera Codice
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Statistics */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -132,10 +177,6 @@ export default function InviteManagement() {
                   <p className="mb-4 text-sm text-muted-foreground">
                     Genera un nuovo codice di invito per invitare membri del team
                   </p>
-                  <Button onClick={handleGenerateCode} disabled={generateCode.isPending}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Genera Codice
-                  </Button>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -145,7 +186,7 @@ export default function InviteManagement() {
                       className="flex items-center justify-between rounded-lg border p-4 hover:bg-muted/50"
                     >
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <code className="rounded bg-muted px-2 py-1 text-sm font-mono">
                             {invite.code}
                           </code>
@@ -155,7 +196,7 @@ export default function InviteManagement() {
                           </Badge>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          Creato: {new Date(Number(invite.created / BigInt(1000000))).toLocaleDateString('it-IT')}
+                          Creato il: {formatDateTime(invite.created)}
                         </p>
                       </div>
                       <Button
@@ -223,7 +264,7 @@ export default function InviteManagement() {
                           </code>
                         </TableCell>
                         <TableCell>
-                          {new Date(Number(invite.created / BigInt(1000000))).toLocaleDateString('it-IT')}
+                          {formatDateTime(invite.created)}
                         </TableCell>
                         <TableCell>
                           <Badge variant="secondary" className="gap-1">
@@ -276,7 +317,7 @@ export default function InviteManagement() {
                       <TableRow key={rsvp.inviteCode}>
                         <TableCell className="font-medium">{rsvp.name}</TableCell>
                         <TableCell>
-                          {new Date(Number(rsvp.timestamp / BigInt(1000000))).toLocaleDateString('it-IT')}
+                          {formatDateTime(rsvp.timestamp)}
                         </TableCell>
                         <TableCell>
                           <code className="rounded bg-muted px-2 py-1 text-xs font-mono">

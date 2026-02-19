@@ -67,6 +67,14 @@ export const it = {
     adminView: 'Vista Admin',
   },
 
+  // Header
+  header: {
+    adminMode: 'Modalità Admin',
+    personalMode: 'Modalità Personale',
+    personal: 'Personale',
+    admin: 'Admin',
+  },
+
   // Navigation
   nav: {
     myAttendance: 'Le Mie Presenze',

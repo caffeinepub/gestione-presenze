@@ -1,51 +1,21 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T00:12:20.446Z",
-  "summary": "Frontend Italian localization infrastructure was added (central i18n dictionary + t() helper) and several key UI components were refactored to use it. Domain label mappings were centralized via a new domainLabels module. However, backend-side localization for CSV exports/date formatting is not evidenced, and the diff appears to introduce non-localization functional changes (e.g., new PermissionRequest type and extended domain/status types).",
-  "missing_requirements": [
-    {
-      "id": "REQ-4",
-      "requirement": "Localize backend-generated user-facing content used by the UI and exports, including CSV export column headers and any textual fields that are not purely user-entered. Ensure CSV exports produced from admin reporting and request modules use Italian headers and Italian date formatting.",
-      "reason": "The backend diff shows some error/trap messages translated to Italian, but there is no evidence of CSV export generation being updated to Italian column headers nor any backend Italian date/time formatting for exports.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    }
-  ],
-  "hallucinated_features": [
-    {
-      "description": "Introduction of a new backend PermissionRequest data type and related storage/logic (permissions request workflow).",
-      "reason": "The BuildRequest explicitly forbids adding new product features beyond Italian localization. The diff labels this as new backend functionality rather than localization-only changes.",
-      "evidence": [
-        "backend/main.mo",
-        "frontend-file-summaries.txt (frontend/src/hooks/useQueries.ts: \"new permission request hooks\")",
-        "frontend-file-summaries.txt (frontend/src/components/MyPermissions.tsx, frontend/src/components/PermissionApprovals.tsx)"
-      ]
-    },
-    {
-      "description": "Extension of attendance statuses/activity types (e.g., Sickness, Time Bank, Weekend, Workshops) as user-selectable options.",
-      "reason": "These are functional/domain expansions (new selectable statuses/activity types) and are not required for Italian localization; the BuildRequest disallows adding new product features.",
-      "evidence": [
-        "frontend/src/lib/domainLabels.ts (attendanceStatus.sickness/timeBank; activityType.weekend/workshops)",
-        "frontend-file-summaries.txt (frontend/src/components/MyAttendance.tsx: \"extended status options ... and activity types ...\")",
-        "backend/main.mo (AttendanceStatus includes #sickness and #timeBank; ActivityType includes #weekend and #workshops)"
-      ]
-    }
-  ],
-  "confidence": 0.72,
+  "generatedAt": "2026-02-19T11:29:44.002Z",
+  "summary": "The implementation successfully addresses all three requirements (REQ-1, REQ-2, REQ-3). Admin role invites are supported with role selection UI and backend logic. User names are displayed throughout TeamOverview by fetching profiles for all principals. Invite timestamps are stored and displayed in Italian format (DD/MM/YYYY HH:mm). All acceptance criteria appear to be met based on the diff evidence.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 0.92,
   "changed_files": [
     "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/components/Header.tsx",
-    "frontend/src/components/ProfileSetupModal.tsx",
-    "frontend/src/lib/attendanceLabels.ts",
+    "frontend/src/components/InviteManagement.tsx",
+    "frontend/src/components/OnboardingFlow.tsx",
+    "frontend/src/components/TeamOverview.tsx",
+    "frontend/src/hooks/useQueries.ts",
     "frontend/src/lib/domainLabels.ts",
-    "frontend/src/lib/i18n/index.ts",
-    "frontend/src/lib/i18n/it.ts",
-    "frontend/src/pages/Dashboard.tsx",
-    "frontend/src/pages/LoginPage.tsx",
+    "frontend/src/lib/utils.ts",
     "project_state.json"
   ]
 }

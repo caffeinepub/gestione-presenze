@@ -2,15 +2,13 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-translate-all-visible-frontend-ui-strings-to-italian-across-the-entire-app-login-page-onboarding-profile-setup-modal-dashboard-attendance-pages-holiday-pages-permissions-pages-admin-approvals-team-overview-reporting-invite-management-headers-menus-buttons-labels-empty-states-validation-messages-toast-alert-text-and-any-helper-text-ensure-consistent-terminology-for-roles-and-workflows-e-g-admin-amministratore-employee-dipendente-across-all-screens",
-      "featureTitle": "Translate all visible frontend UI strings to Italian across the entire app (login page, onboarding, profile setup modal, dashboard, attendance pages, holiday pages, permissions pages, admin approvals, team overview/reporting, invite management, headers/menus, buttons, labels, empty states, validation messages, toast/alert text, and any helper text). Ensure consistent terminology for roles and workflows (e.g., Admin/Amministratore, Employee/Dipendente) across all screens.",
+      "featureId": "feature-add-the-ability-to-create-invite-links-specifically-for-the-administrator-role-allowing-admins-to-share-administrative-privileges-with-new-users",
+      "featureTitle": "Add the ability to create invite links specifically for the administrator role, allowing admins to share administrative privileges with new users",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/Header.tsx",
-        "frontend/src/components/ProfileSetupModal.tsx",
-        "frontend/src/lib/attendanceLabels.ts",
-        "frontend/src/pages/Dashboard.tsx",
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/components/InviteManagement.tsx",
+        "frontend/src/components/OnboardingFlow.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/lib/domainLabels.ts"
       ],
       "components": [
         "authorization@1.0.1",
@@ -27,12 +25,32 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-translate-all-domain-labels-for-attendance-statuses-activity-types-request-statuses-and-role-labels-into-italian-wherever-they-appear-badges-dropdowns-tables-summaries-and-exports-initiated-from-the-ui-centralize-these-label-mappings-so-the-same-italian-terms-are-used-everywhere",
-      "featureTitle": "Translate all domain labels for attendance statuses, activity types, request statuses, and role labels into Italian wherever they appear (badges, dropdowns, tables, summaries, and exports initiated from the UI). Centralize these label mappings so the same Italian terms are used everywhere.",
+      "featureId": "feature-display-user-names-instead-of-identity-codes-in-the-team-overview-panoramica-team-to-meet-regulatory-compliance-requirements-for-managing-team-members",
+      "featureTitle": "Display user names instead of identity codes in the Team Overview (Panoramica team) to meet regulatory compliance requirements for managing team members",
       "files": [
-        "frontend/src/lib/attendanceLabels.ts",
-        "frontend/src/lib/domainLabels.ts",
-        "frontend/src/pages/Dashboard.tsx"
+        "frontend/src/components/TeamOverview.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@1.0.1",
+        "invite-links@1.0.1",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-show-the-creation-date-and-time-for-each-generated-invite-link-in-the-invite-management-interface",
+      "featureTitle": "Show the creation date and time for each generated invite link in the invite management interface",
+      "files": [
+        "frontend/src/components/InviteManagement.tsx",
+        "frontend/src/lib/utils.ts"
       ],
       "components": [
         "authorization@1.0.1",
@@ -45,32 +63,6 @@
       ],
       "testIds": [
         "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-simple-maintainable-localization-structure-for-italian-strings-on-the-frontend-e-g-a-single-source-of-truth-dictionary-module-and-refactor-existing-components-to-use-it-without-modifying-any-files-under-frontend-paths-marked-as-immutable-by-the-platform-constraints",
-      "featureTitle": "Add a simple, maintainable localization structure for Italian strings on the frontend (e.g., a single source-of-truth dictionary/module) and refactor existing components to use it, without modifying any files under frontend paths marked as immutable by the platform constraints.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/Header.tsx",
-        "frontend/src/components/ProfileSetupModal.tsx",
-        "frontend/src/lib/i18n/index.ts",
-        "frontend/src/lib/i18n/it.ts",
-        "frontend/src/pages/Dashboard.tsx",
-        "frontend/src/pages/LoginPage.tsx"
-      ],
-      "components": [
-        "authorization@1.0.1",
-        "invite-links@1.0.1",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
       ],
       "confidence": "high"
     }

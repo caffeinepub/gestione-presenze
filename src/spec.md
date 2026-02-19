@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fully localize the entire application UI and user-facing exports to Italian, with consistent terminology and Italian date/time formatting.
+**Goal:** Enable admin invites, display user names in team overview, and show invite creation timestamps.
 
 **Planned changes:**
-- Translate all visible frontend UI strings to Italian across all pages, modals, menus, buttons, empty states, validation messages, and alerts/toasts.
-- Introduce a simple centralized frontend localization structure (single source of truth for Italian strings) and refactor components to use it, without editing immutable frontend paths.
-- Localize frontend date/time display to Italian formatting (day/month names, short/long formats, and day/week/month filter labels) consistently across personal and admin views.
-- Centralize Italian label mappings for domain/status values (attendance statuses, activity types, request statuses, roles) so the same internal values render consistently everywhere.
-- Localize backend-generated user-facing text used by the UI and exports, including CSV export column headers and Italian-formatted dates/times in exported files.
+- Add role selector (user/admin) to invite generation interface
+- Store and display creation date/time for each invite link
+- Show user names instead of identity codes in Team Overview and CSV exports
+- Backend support for admin role assignment via invite codes
 
-**User-visible outcome:** The app appears fully in Italian (UI copy, labels, and statuses) with Italian-formatted dates/times, and CSV exports generated from the app include Italian headers and Italian date/time formatting.
+**User-visible outcome:** Administrators can create invite links for both regular users and new admins, see when each invite was created, and view team members by name in the Team Overview for compliance purposes.

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { UserProfile, AttendanceRecord, HolidayRequest, PermissionRequest, InviteCode, RSVP } from '../backend';
+import type { UserProfile, AttendanceRecord, HolidayRequest, PermissionRequest, InviteCode, RSVP, UserRole } from '../backend';
 import { Variant_generic_familyEmergency_medical } from '../backend';
 import type { Principal } from '@icp-sdk/core/principal';
 
@@ -22,6 +22,48 @@ export function useGetCallerUserProfile() {
     isLoading: actorFetching || query.isLoading,
     isFetched: !!actor && query.isFetched,
   };
+}
+
+export function useGetUserProfile(principal: Principal | null) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<UserProfile | null>({
+    queryKey: ['userProfile', principal?.toString()],
+    queryFn: async () => {
+      if (!actor || !principal) return null;
+      return actor.getUserProfile(principal);
+    },
+    enabled: !!actor && !isFetching && !!principal,
+  });
+}
+
+export function useGetMultipleUserProfiles(principals: Principal[]) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Map<string, UserProfile>>({
+    queryKey: ['multipleUserProfiles', principals.map(p => p.toString()).sort().join(',')],
+    queryFn: async () => {
+      if (!actor) return new Map();
+      
+      const profileMap = new Map<string, UserProfile>();
+      
+      // Fetch all profiles in parallel
+      const profilePromises = principals.map(async (principal) => {
+        try {
+          const profile = await actor.getUserProfile(principal);
+          if (profile) {
+            profileMap.set(principal.toString(), profile);
+          }
+        } catch (error) {
+          console.error(`Failed to fetch profile for ${principal.toString()}:`, error);
+        }
+      });
+      
+      await Promise.all(profilePromises);
+      return profileMap;
+    },
+    enabled: !!actor && !isFetching && principals.length > 0,
+  });
 }
 
 export function useSaveCallerUserProfile() {
@@ -47,6 +89,19 @@ export function useIsCallerAdmin() {
     queryFn: async () => {
       if (!actor) return false;
       return actor.isCallerAdmin();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetCallerUserRole() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<UserRole>({
+    queryKey: ['callerUserRole'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.getCallerUserRole();
     },
     enabled: !!actor && !isFetching,
   });
@@ -358,6 +413,21 @@ export function useGenerateInviteCode() {
     mutationFn: async () => {
       if (!actor) throw new Error('Actor not available');
       return actor.generateInviteCode();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inviteCodes'] });
+    },
+  });
+}
+
+export function useGenerateInviteCodeWithRole() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (role: UserRole) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.generateInviteCodeWithRole(role);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inviteCodes'] });
