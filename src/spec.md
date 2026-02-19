@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Enable admin invites, display user names in team overview, and show invite creation timestamps.
+**Goal:** Display employee names instead of employee codes in the holiday and permission approval views.
 
 **Planned changes:**
-- Add role selector (user/admin) to invite generation interface
-- Store and display creation date/time for each invite link
-- Show user names instead of identity codes in Team Overview and CSV exports
-- Backend support for admin role assignment via invite codes
+- Replace employee code display with full employee names in the HolidayApprovals component
+- Replace employee code display with full employee names in the PermissionApprovals component
+- Fetch user profiles to retrieve employee names for all requests shown in approval views
 
-**User-visible outcome:** Administrators can create invite links for both regular users and new admins, see when each invite was created, and view team members by name in the Team Overview for compliance purposes.
+**User-visible outcome:** Managers reviewing holiday and permission requests will see employee names instead of cryptic employee codes, making it easier to identify who submitted each request.

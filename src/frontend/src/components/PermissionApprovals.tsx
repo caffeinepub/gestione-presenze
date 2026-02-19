@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useGetAllPermissionRequests, useApprovePermissionRequest, useRejectPermissionRequest } from '../hooks/useQueries';
+import { useGetAllPermissionRequests, useApprovePermissionRequest, useRejectPermissionRequest, useGetMultipleUserProfiles } from '../hooks/useQueries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -16,12 +16,23 @@ export default function PermissionApprovals() {
   const rejectRequest = useRejectPermissionRequest();
   const [filter, setFilter] = useState<'all' | 'pending' | 'processed'>('pending');
 
+  // Extract unique user principals from requests
+  const uniquePrincipals = useMemo(() => {
+    const principals = requests.map(r => r.user);
+    return Array.from(new Set(principals.map(p => p.toString()))).map(str => 
+      principals.find(p => p.toString() === str)!
+    );
+  }, [requests]);
+
+  // Fetch all user profiles
+  const { data: profilesMap, isLoading: profilesLoading } = useGetMultipleUserProfiles(uniquePrincipals);
+
   const handleApprove = async (requestId: bigint) => {
     try {
       await approveRequest.mutateAsync(requestId);
-      toast.success('Permission request approved!');
+      toast.success('Richiesta permesso approvata!');
     } catch (error) {
-      toast.error('Unable to approve request');
+      toast.error('Impossibile approvare la richiesta');
       console.error(error);
     }
   };
@@ -29,18 +40,18 @@ export default function PermissionApprovals() {
   const handleReject = async (requestId: bigint) => {
     try {
       await rejectRequest.mutateAsync(requestId);
-      toast.success('Permission request rejected');
+      toast.success('Richiesta permesso rifiutata');
     } catch (error) {
-      toast.error('Unable to reject request');
+      toast.error('Impossibile rifiutare la richiesta');
       console.error(error);
     }
   };
 
   const getStatusBadge = (status: Variant_pending_approved_rejected) => {
     const variants: Record<Variant_pending_approved_rejected, { variant: 'default' | 'secondary' | 'destructive'; label: string }> = {
-      [Variant_pending_approved_rejected.pending]: { variant: 'secondary', label: 'Pending' },
-      [Variant_pending_approved_rejected.approved]: { variant: 'default', label: 'Approved' },
-      [Variant_pending_approved_rejected.rejected]: { variant: 'destructive', label: 'Rejected' },
+      [Variant_pending_approved_rejected.pending]: { variant: 'secondary', label: 'In Attesa' },
+      [Variant_pending_approved_rejected.approved]: { variant: 'default', label: 'Approvata' },
+      [Variant_pending_approved_rejected.rejected]: { variant: 'destructive', label: 'Rifiutata' },
     };
 
     const config = variants[status];
@@ -49,11 +60,17 @@ export default function PermissionApprovals() {
 
   const getRequestTypeLabel = (type: Variant_generic_familyEmergency_medical) => {
     const labels: Record<Variant_generic_familyEmergency_medical, string> = {
-      [Variant_generic_familyEmergency_medical.generic]: 'Generic',
-      [Variant_generic_familyEmergency_medical.medical]: 'Medical',
-      [Variant_generic_familyEmergency_medical.familyEmergency]: 'Family Emergency',
+      [Variant_generic_familyEmergency_medical.generic]: 'Generico',
+      [Variant_generic_familyEmergency_medical.medical]: 'Medico',
+      [Variant_generic_familyEmergency_medical.familyEmergency]: 'Emergenza Familiare',
     };
     return labels[type];
+  };
+
+  const getUserName = (userPrincipal: any) => {
+    if (profilesLoading) return 'Caricamento...';
+    const profile = profilesMap?.get(userPrincipal.toString());
+    return profile?.name || userPrincipal.toString().slice(0, 10) + '...';
   };
 
   const pendingRequests = requests.filter((r) => r.status === Variant_pending_approved_rejected.pending);
@@ -78,38 +95,38 @@ export default function PermissionApprovals() {
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="border-2 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium">In Attesa</CardTitle>
             <Clock className="h-4 w-4 text-secondary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{pendingRequests.length}</div>
-            <p className="text-xs text-muted-foreground">Awaiting review</p>
+            <p className="text-xs text-muted-foreground">In attesa di revisione</p>
           </CardContent>
         </Card>
 
         <Card className="border-2 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Approved</CardTitle>
+            <CardTitle className="text-sm font-medium">Approvate</CardTitle>
             <CheckCircle2 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {requests.filter((r) => r.status === Variant_pending_approved_rejected.approved).length}
             </div>
-            <p className="text-xs text-muted-foreground">Total approved</p>
+            <p className="text-xs text-muted-foreground">Totale approvate</p>
           </CardContent>
         </Card>
 
         <Card className="border-2 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rejected</CardTitle>
+            <CardTitle className="text-sm font-medium">Rifiutate</CardTitle>
             <XCircle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {requests.filter((r) => r.status === Variant_pending_approved_rejected.rejected).length}
             </div>
-            <p className="text-xs text-muted-foreground">Total rejected</p>
+            <p className="text-xs text-muted-foreground">Totale rifiutate</p>
           </CardContent>
         </Card>
       </div>
@@ -118,8 +135,8 @@ export default function PermissionApprovals() {
         <CardHeader>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>Permission Requests</CardTitle>
-              <CardDescription>Review and manage permission requests</CardDescription>
+              <CardTitle>Richieste Permessi</CardTitle>
+              <CardDescription>Rivedi e gestisci le richieste permessi</CardDescription>
             </div>
             <div className="flex gap-2">
               <Button
@@ -127,21 +144,21 @@ export default function PermissionApprovals() {
                 size="sm"
                 onClick={() => setFilter('pending')}
               >
-                Pending
+                In Attesa
               </Button>
               <Button
                 variant={filter === 'processed' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setFilter('processed')}
               >
-                Processed
+                Elaborate
               </Button>
               <Button
                 variant={filter === 'all' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setFilter('all')}
               >
-                All
+                Tutte
               </Button>
             </div>
           </div>
@@ -149,20 +166,20 @@ export default function PermissionApprovals() {
         <CardContent>
           {displayedRequests.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
-              No permission requests {filter === 'all' ? '' : filter === 'pending' ? 'pending' : 'processed'}.
+              Nessuna richiesta permesso {filter === 'all' ? '' : filter === 'pending' ? 'in attesa' : 'elaborata'}.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Start Date</TableHead>
-                    <TableHead>End Date</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Reason</TableHead>
-                    <TableHead>Status</TableHead>
-                    {filter === 'pending' && <TableHead>Actions</TableHead>}
+                    <TableHead>Dipendente</TableHead>
+                    <TableHead>Data Inizio</TableHead>
+                    <TableHead>Data Fine</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Motivo</TableHead>
+                    <TableHead>Stato</TableHead>
+                    {filter === 'pending' && <TableHead>Azioni</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -171,7 +188,7 @@ export default function PermissionApprovals() {
                     .map((request) => (
                       <TableRow key={Number(request.id)}>
                         <TableCell className="font-medium">
-                          {request.user.toString().slice(0, 10)}...
+                          {getUserName(request.user)}
                         </TableCell>
                         <TableCell>
                           {format(new Date(Number(request.startDate) / 1_000_000), 'd MMM yyyy', { locale: it })}
@@ -193,7 +210,7 @@ export default function PermissionApprovals() {
                                 disabled={approveRequest.isPending || rejectRequest.isPending}
                               >
                                 <Check className="mr-1 h-4 w-4" />
-                                Approve
+                                Approva
                               </Button>
                               <Button
                                 size="sm"
@@ -202,7 +219,7 @@ export default function PermissionApprovals() {
                                 disabled={approveRequest.isPending || rejectRequest.isPending}
                               >
                                 <X className="mr-1 h-4 w-4" />
-                                Reject
+                                Rifiuta
                               </Button>
                             </div>
                           </TableCell>

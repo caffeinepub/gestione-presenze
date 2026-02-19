@@ -1,79 +1,55 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-19T11:29:44.005Z",
+  "generatedAt": "2026-02-19T15:14:00.433Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 3,
-    "implemented": 3,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add the ability to create invite links specifically for the administrator role, allowing admins to share administrative privileges with new users",
+        "summary": "In the holiday approvals view (HolidayApprovals component), display the employee's full name instead of their employee code for each holiday request",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/InviteManagement.tsx",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/OnboardingFlow.tsx",
-          "frontend/src/lib/domainLabels.ts"
+          "frontend/src/components/HolidayApprovals.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/InviteManagement.tsx",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/OnboardingFlow.tsx",
-          "frontend/src/lib/domainLabels.ts"
+          "frontend/src/components/HolidayApprovals.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Display user names instead of identity codes in the Team Overview (Panoramica team) to meet regulatory compliance requirements for managing team members",
+        "summary": "In the permission approvals view (PermissionApprovals component), display the employee's full name instead of their employee code for each permission request",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/TeamOverview.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/PermissionApprovals.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/TeamOverview.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/PermissionApprovals.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Show the creation date and time for each generated invite link in the invite management interface",
-        "status": "implemented",
+        "summary": "Fetch user profiles for all employees who have submitted requests visible in the approval views to enable name lookup",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/components/InviteManagement.tsx",
-          "frontend/src/lib/utils.ts"
+          "frontend/src/hooks/useQueries.ts"
         ],
-        "matchedFiles": [
-          "frontend/src/components/InviteManagement.tsx",
-          "frontend/src/lib/utils.ts"
-        ]
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/InviteManagement.tsx",
-    "frontend/src/components/OnboardingFlow.tsx",
-    "frontend/src/components/TeamOverview.tsx",
-    "frontend/src/config.ts",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/lib/domainLabels.ts",
-    "frontend/src/lib/utils.ts",
+    "frontend/src/components/HolidayApprovals.tsx",
+    "frontend/src/components/PermissionApprovals.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

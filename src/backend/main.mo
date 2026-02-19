@@ -1,6 +1,6 @@
 import AccessControl "authorization/access-control";
 import InviteLinksModule "invite-links/invite-links-module";
-import Migration "migration";
+
 import Principal "mo:base/Principal";
 import OrderedMap "mo:base/OrderedMap";
 import Iter "mo:base/Iter";
@@ -11,7 +11,7 @@ import List "mo:base/List";
 import Random "mo:base/Random";
 import Int "mo:base/Int";
 
-(with migration = Migration.run)
+
 actor AttendanceManagement {
   let accessControlState = AccessControl.initState();
 

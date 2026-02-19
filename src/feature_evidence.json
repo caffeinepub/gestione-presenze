@@ -2,13 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-the-ability-to-create-invite-links-specifically-for-the-administrator-role-allowing-admins-to-share-administrative-privileges-with-new-users",
-      "featureTitle": "Add the ability to create invite links specifically for the administrator role, allowing admins to share administrative privileges with new users",
+      "featureId": "feature-in-the-holiday-approvals-view-holidayapprovals-component-display-the-employee-s-full-name-instead-of-their-employee-code-for-each-holiday-request",
+      "featureTitle": "In the holiday approvals view (HolidayApprovals component), display the employee's full name instead of their employee code for each holiday request",
       "files": [
-        "frontend/src/components/InviteManagement.tsx",
-        "frontend/src/components/OnboardingFlow.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/lib/domainLabels.ts"
+        "frontend/src/components/HolidayApprovals.tsx"
       ],
       "components": [
         "authorization@1.0.1",
@@ -25,11 +22,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-user-names-instead-of-identity-codes-in-the-team-overview-panoramica-team-to-meet-regulatory-compliance-requirements-for-managing-team-members",
-      "featureTitle": "Display user names instead of identity codes in the Team Overview (Panoramica team) to meet regulatory compliance requirements for managing team members",
+      "featureId": "feature-in-the-permission-approvals-view-permissionapprovals-component-display-the-employee-s-full-name-instead-of-their-employee-code-for-each-permission-request",
+      "featureTitle": "In the permission approvals view (PermissionApprovals component), display the employee's full name instead of their employee code for each permission request",
       "files": [
-        "frontend/src/components/TeamOverview.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/PermissionApprovals.tsx"
       ],
       "components": [
         "authorization@1.0.1",
@@ -42,27 +38,6 @@
       ],
       "testIds": [
         "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-show-the-creation-date-and-time-for-each-generated-invite-link-in-the-invite-management-interface",
-      "featureTitle": "Show the creation date and time for each generated invite link in the invite management interface",
-      "files": [
-        "frontend/src/components/InviteManagement.tsx",
-        "frontend/src/lib/utils.ts"
-      ],
-      "components": [
-        "authorization@1.0.1",
-        "invite-links@1.0.1",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
       ],
       "confidence": "high"
     }

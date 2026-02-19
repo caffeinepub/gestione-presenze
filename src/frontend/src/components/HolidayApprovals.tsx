@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useGetAllHolidayRequests, useApproveHolidayRequest, useRejectHolidayRequest } from '../hooks/useQueries';
+import { useGetAllHolidayRequests, useApproveHolidayRequest, useRejectHolidayRequest, useGetMultipleUserProfiles } from '../hooks/useQueries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -15,6 +15,17 @@ export default function HolidayApprovals() {
   const approveRequest = useApproveHolidayRequest();
   const rejectRequest = useRejectHolidayRequest();
   const [filter, setFilter] = useState<'all' | 'pending' | 'processed'>('pending');
+
+  // Extract unique user principals from requests
+  const uniquePrincipals = useMemo(() => {
+    const principals = requests.map(r => r.user);
+    return Array.from(new Set(principals.map(p => p.toString()))).map(str => 
+      principals.find(p => p.toString() === str)!
+    );
+  }, [requests]);
+
+  // Fetch all user profiles
+  const { data: profilesMap, isLoading: profilesLoading } = useGetMultipleUserProfiles(uniquePrincipals);
 
   const handleApprove = async (requestId: bigint) => {
     try {
@@ -45,6 +56,12 @@ export default function HolidayApprovals() {
 
     const config = variants[status];
     return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const getUserName = (userPrincipal: any) => {
+    if (profilesLoading) return 'Caricamento...';
+    const profile = profilesMap?.get(userPrincipal.toString());
+    return profile?.name || userPrincipal.toString().slice(0, 10) + '...';
   };
 
   const pendingRequests = requests.filter((r) => r.status === Variant_pending_approved_rejected.pending);
@@ -147,7 +164,7 @@ export default function HolidayApprovals() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Utente</TableHead>
+                    <TableHead>Dipendente</TableHead>
                     <TableHead>Data Inizio</TableHead>
                     <TableHead>Data Fine</TableHead>
                     <TableHead>Motivo</TableHead>
@@ -161,7 +178,7 @@ export default function HolidayApprovals() {
                     .map((request) => (
                       <TableRow key={Number(request.id)}>
                         <TableCell className="font-medium">
-                          {request.user.toString().slice(0, 10)}...
+                          {getUserName(request.user)}
                         </TableCell>
                         <TableCell>
                           {format(new Date(Number(request.startDate) / 1_000_000), 'd MMM yyyy', { locale: it })}

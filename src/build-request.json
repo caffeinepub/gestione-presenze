@@ -1,78 +1,69 @@
 {
   "kind": "build_request",
-  "title": "Add admin invites, user names in team overview, and invite timestamps",
+  "title": "Display employee names instead of codes in approval views",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add the ability to create invite links specifically for the administrator role, allowing admins to share administrative privileges with new users",
-      "target": "both",
+      "text": "In the holiday approvals view (HolidayApprovals component), display the employee's full name instead of their employee code for each holiday request",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-12"
+          "msg-6"
         ],
         "quotes": [
-          "poter creare un link di invito anche per un amministratore, così da condividere l'opzione amministratore"
+          "in approvazione ferie e approvazioni permessi voglio vedere i nomi dei dipendenti e non i codici"
         ]
       },
       "acceptanceCriteria": [
-        "InviteManagement component includes a role selector (user/admin) when generating invites",
-        "Backend createInviteCode accepts an optional role parameter",
-        "Generated invite codes carry role information",
-        "Onboarding flow respects the invite's designated role and assigns it to new profiles",
-        "Admin invites are visually distinguished in the invite list"
+        "The holiday approvals table shows employee names in a dedicated column",
+        "Employee codes are no longer displayed as the primary identifier",
+        "The employee name is retrieved from the user profile using the userId associated with each request"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Display user names instead of identity codes in the Team Overview (Panoramica team) to meet regulatory compliance requirements for managing team members",
+      "text": "In the permission approvals view (PermissionApprovals component), display the employee's full name instead of their employee code for each permission request",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-12"
+          "msg-6"
         ],
         "quotes": [
-          "nella Panoramica team gli utenti vengono individuati solo con un codice, invece a noi serve sapere il loro nome per poter gestire gli adempimenti normativi"
+          "in approvazione ferie e approvazioni permessi voglio vedere i nomi dei dipendenti e non i codici"
         ]
       },
       "acceptanceCriteria": [
-        "TeamOverview component queries and displays user profile names alongside attendance data",
-        "User names are shown in attendance records instead of principal/identity codes",
-        "CSV export includes user names rather than codes",
-        "All team member identifiers are human-readable throughout the overview interface"
+        "The permission approvals table shows employee names in a dedicated column",
+        "Employee codes are no longer displayed as the primary identifier",
+        "The employee name is retrieved from the user profile using the userId associated with each request"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Show the creation date and time for each generated invite link in the invite management interface",
-      "target": "both",
+      "text": "Fetch user profiles for all employees who have submitted requests visible in the approval views to enable name lookup",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-12"
-        ],
-        "quotes": [
-          "quando si generano i link di invito fai vedere anche l'orario di creazione e la data"
+          "msg-6"
         ]
       },
       "acceptanceCriteria": [
-        "Backend stores timestamp when each invite code is created",
-        "InviteManagement component displays formatted creation date and time for each invite",
-        "Timestamps are shown in Italian locale format (dd/MM/yyyy HH:mm)",
-        "Newly created invites immediately show their creation timestamp in the UI"
+        "User profiles are fetched efficiently using the existing useMultipleProfiles hook",
+        "Names are displayed even when viewing large lists of requests",
+        "Loading states are handled gracefully while profile data is being fetched"
       ]
     }
   ],
   "constraints": [
-    "Preserve all existing user data including profiles, attendance records, holidays, and permissions",
-    "Maintain compatibility with existing invite codes already in use",
-    "Do not modify the Internet Identity authentication flow",
-    "Keep the single-actor backend architecture"
+    "Maintain all existing data and functionality",
+    "Do not modify the backend data structures or API",
+    "Preserve existing filtering and approval actions in both components"
   ],
   "nonGoals": [
-    "Changing the overall invite system workflow",
-    "Modifying existing user roles or permissions structure beyond adding admin invite capability",
-    "Redesigning the Team Overview layout or statistics calculations",
-    "Adding new regulatory compliance features beyond displaying user names"
+    "Adding employee codes as a secondary display element",
+    "Modifying other views beyond holiday and permission approvals",
+    "Changing the approval workflow or business logic"
   ],
   "imageRequirements": {
     "required": [],

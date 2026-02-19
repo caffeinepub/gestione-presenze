@@ -1,37 +1,29 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Team management application with admin and user roles, invitation system, and team overview dashboard",
+  "summary": "HR/Leave management system with admin invitations, leave/permit approval workflows, and user-friendly employee name displays",
   "architectural_notes": [
-    "Application has admin and user role system",
-    "Invitation link system for onboarding",
-    "Team overview dashboard exists",
-    "User data persistence required across updates"
+    "Admin invitation system implemented",
+    "Leave (ferie) and permit approval workflows exist",
+    "User overview displays usernames",
+    "Links show creation date/time"
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-add-the-ability-to-create-invite-links-specifically-for-the-administrator-role-allowing-admins-to-share-administrative-privileges-with-new-users",
-      "title": "Add the ability to create invite links specifically for the administrator role, allowing admins to share administrative privileges with new users",
+      "id": "feature-in-the-holiday-approvals-view-holidayapprovals-component-display-the-employee-s-full-name-instead-of-their-employee-code-for-each-holiday-request",
+      "title": "In the holiday approvals view (HolidayApprovals component), display the employee's full name instead of their employee code for each holiday request",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-display-user-names-instead-of-identity-codes-in-the-team-overview-panoramica-team-to-meet-regulatory-compliance-requirements-for-managing-team-members",
-      "title": "Display user names instead of identity codes in the Team Overview (Panoramica team) to meet regulatory compliance requirements for managing team members",
+      "id": "feature-in-the-permission-approvals-view-permissionapprovals-component-display-the-employee-s-full-name-instead-of-their-employee-code-for-each-permission-request",
+      "title": "In the permission approvals view (PermissionApprovals component), display the employee's full name instead of their employee code for each permission request",
       "reqIds": [
         "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-show-the-creation-date-and-time-for-each-generated-invite-link-in-the-invite-management-interface",
-      "title": "Show the creation date and time for each generated invite link in the invite management interface",
-      "reqIds": [
-        "REQ-3"
       ],
       "version": 1
     }
@@ -39,24 +31,20 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Create invite links for admin role sharing",
+      "summary": "Show employee names instead of codes in leave approval and permit approval views",
       "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-2",
-      "summary": "Display user names instead of codes in Team Overview for regulatory compliance",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Show creation date and time when generating invite links",
-      "reqIds": [],
+      "id": "AR-4",
+      "summary": "Fetch user profiles for all employees who have submitted requests visible in the approval views to enable name lookup",
+      "reqIds": [
+        "REQ-3"
+      ],
       "status": "pending"
     }
   ],
-  "projectName": "Add admin invites, user names in team overview, and invite timestamps",
+  "projectName": "Display employee names instead of codes in approval views",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

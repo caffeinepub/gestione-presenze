@@ -1,80 +1,53 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add admin invites, user names in team overview, and invite timestamps",
+  "title": "Display employee names instead of codes in approval views",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add the ability to create invite links specifically for the administrator role, allowing admins to share administrative privileges with new users",
+      "summary": "Display employee full names in the holiday approvals view instead of employee codes",
       "acceptanceCriteria": [
-        "InviteManagement component includes a role selector (user/admin) when generating invites",
-        "Generated invite codes carry role information",
-        "Onboarding flow respects the invite's designated role and assigns it to new profiles",
-        "Admin invites are visually distinguished in the invite list"
+        "The holiday approvals table shows employee names in a dedicated column",
+        "Employee codes are no longer displayed as the primary identifier",
+        "The employee name is retrieved from the user profile using the userId associated with each request"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/InviteManagement.tsx",
+          "path": "frontend/src/components/HolidayApprovals.tsx",
           "operation": "modify",
-          "description": "Add a role selector dropdown (user/admin) to the invite generation section. When generating an invite, call either generateInviteCode() for user invites or generateInviteCodeWithRole(UserRole.admin) for admin invites based on the selection. Display a role badge next to each invite code in the list to visually distinguish admin invites from user invites. Update the UI to show which invites grant admin privileges."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a new mutation hook useGenerateInviteCodeWithRole that accepts a UserRole parameter and calls actor.generateInviteCodeWithRole(role). This hook will be used by InviteManagement to create role-specific invite codes. Ensure proper error handling and query invalidation after successful generation."
-        },
-        {
-          "path": "frontend/src/components/OnboardingFlow.tsx",
-          "operation": "modify",
-          "description": "After successfully submitting the RSVP and creating the profile in step 3, check if the invite code grants admin privileges by calling actor.getCallerUserRole(). If the role is admin, display a notification informing the user they have been granted administrator access. This ensures users understand their assigned role during onboarding."
-        },
-        {
-          "path": "frontend/src/lib/domainLabels.ts",
-          "operation": "modify",
-          "description": "Add Italian labels for invite role types if not already present, ensuring consistency with existing role translations. Update the getUserRoleLabel function to support displaying role information in the InviteManagement UI."
+          "description": "Replace employee code display with employee full name by fetching user profiles using the useMultipleProfiles hook. Extract all unique user principals from the holiday requests array, pass them to useMultipleProfiles to fetch their profiles, then display the profile name in the table column where the principal string was previously shown. Handle loading states while profiles are being fetched and display a fallback (e.g., 'Loading...' or the principal) if a profile is unavailable."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Display user names instead of identity codes in the Team Overview to meet regulatory compliance requirements for managing team members",
+      "summary": "Display employee full names in the permission approvals view instead of employee codes",
       "acceptanceCriteria": [
-        "TeamOverview component queries and displays user profile names alongside attendance data",
-        "User names are shown in attendance records instead of principal/identity codes",
-        "CSV export includes user names rather than codes",
-        "All team member identifiers are human-readable throughout the overview interface"
+        "The permission approvals table shows employee names in a dedicated column",
+        "Employee codes are no longer displayed as the primary identifier",
+        "The employee name is retrieved from the user profile using the userId associated with each request"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/TeamOverview.tsx",
+          "path": "frontend/src/components/PermissionApprovals.tsx",
           "operation": "modify",
-          "description": "Modify the component to fetch user profiles for all principals displayed in the attendance data using actor.getUserProfile(principal). Store the profile data in a Map<string, UserProfile> keyed by principal. Replace all principal.toText() displays with the corresponding user's name from their profile. Update the table rendering logic to show user names in the first column instead of truncated principals. For CSV export, replace principal strings with user names in the exported data. Handle cases where a profile might not exist by displaying a fallback like 'Unknown User' with the principal in parentheses."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a new query hook useGetUserProfile(principal: Principal) that fetches a single user profile by calling actor.getUserProfile(principal). This hook will be used by TeamOverview to load names for all team members. Add a batch query hook useGetMultipleUserProfiles(principals: Principal[]) that efficiently fetches multiple profiles and returns them as a Map for easy lookup."
+          "description": "Replace employee code display with employee full name by fetching user profiles using the useMultipleProfiles hook. Extract all unique user principals from the permission requests array, pass them to useMultipleProfiles to fetch their profiles, then display the profile name in the table column where the principal string was previously shown. Handle loading states while profiles are being fetched and display a fallback (e.g., 'Loading...' or the principal) if a profile is unavailable."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Show the creation date and time for each generated invite link in the invite management interface",
+      "summary": "Ensure efficient user profile fetching for approval views using the existing useMultipleProfiles hook",
       "acceptanceCriteria": [
-        "InviteManagement component displays formatted creation date and time for each invite",
-        "Timestamps are shown in Italian locale format (dd/MM/yyyy HH:mm)",
-        "Newly created invites immediately show their creation timestamp in the UI"
+        "User profiles are fetched efficiently using the existing useMultipleProfiles hook",
+        "Names are displayed even when viewing large lists of requests",
+        "Loading states are handled gracefully while profile data is being fetched"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/InviteManagement.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Update the invite code list rendering to display the creation timestamp for each InviteCode object. Use the existing formatDateTime function from lib/utils.ts to format the code.created timestamp in Italian format (dd/MM/yyyy HH:mm). Add a new column or inline display showing 'Creato il: <formatted date>' next to each invite code. Ensure the timestamp updates immediately after generating a new invite code."
-        },
-        {
-          "path": "frontend/src/lib/utils.ts",
-          "operation": "modify",
-          "description": "Ensure the formatDateTime function correctly handles InviteCode.created timestamps (which are Time/bigint nanoseconds). If not already present, add a formatInviteTimestamp helper that converts the bigint timestamp to a Date object and formats it as dd/MM/yyyy HH:mm using Italian locale. This provides a consistent timestamp format across the invite management interface."
+          "description": "Review and ensure the useMultipleProfiles hook implementation is optimized for fetching multiple user profiles efficiently. Verify that the hook accepts an array of principals, batches the requests appropriately, handles loading states correctly, and returns a map or object structure that allows easy lookup of profiles by principal. If the hook does not exist, create it following the existing query hook patterns with proper React Query configuration for caching and deduplication."
         }
       ]
     }
